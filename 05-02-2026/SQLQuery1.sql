@@ -1,6 +1,8 @@
 ﻿create database as2_j;
 use as2_j;
 
+----------------------------------------TASK-1--------------------------------------------------------------------------
+
 create table customers ( 
 id int identity(1,1) primary key,
 name varchar (100) not null,
@@ -25,6 +27,7 @@ created_at date default getdate(),
 
 constraint fk_orders_customers foreign key (customer_id) references customers(id)
 );
+
 
 
 
@@ -271,6 +274,8 @@ select c.id as customer_id,o.order_id,c.name,c.city,o.order_status,o.payment_mod
 
 
  ----------------------------------------TASK-3------------------------------------------------------
+
+
 
 select c.*,o.* from customers c left join orders o on c.id=o.customer_id;
 
@@ -536,11 +541,81 @@ join order_items oi on p.product_id = oi.product_id join orders o on oi.order_id
 
 ----------------------------------------------------------TASK-14---------------------------------------------------------------
 
+select * from customers
+where id in (select customer_id from orders);
 
-SELECT *
-FROM orders o
-LEFT JOIN customers c
-    ON o.customer_id = c.id;
+select * from customers
+where id not in (select customer_id from orders);
+
+select * from products
+where product_id not in (select product_id from order_items);
+
+select * from employees
+where dept_id not in (select dept_id from departments);
+
+select * from orders
+where amount > (select avg(amount) from orders);
+
+select distinct c.id, c.name from customers c
+join orders o on c.id = o.customer_id where o.amount > (select avg(amount) from orders);
+
+select e.emp_id, e.emp_name, e.salary, d.dept_name from employees e join departments d 
+on e.dept_id = d.dept_id where e.salary > (select avg(e2.salary) from employees e2 where e2.dept_id = e.dept_id);
+
+select * from departments
+where dept_id in (select distinct emp_id from employees where is_active = 1);
+
+select * from customers
+where id not in (select customer_id from orders where order_status = 'cancelled');
+
+select c.name, o.order_id, o.amount from customers c
+join orders o on c.id = o.customer_id and o.amount > (select avg(amount) from orders);
+
+select c.name, avg_orders.avg_amount from customers c join 
+(select customer_id, avg(amount) as avg_amount from orders group by customer_id) avg_orders on c.id = avg_orders.customer_id;
+
+select * from customers c
+where exists (select 1 from orders o where o.customer_id = c.id);
+
+select * from customers c
+where not exists (select 1 from orders o where o.customer_id = c.id);
+
+select e.emp_name, e.salary, d.dept_name from employees e
+join departments d on e.dept_id = d.dept_id where e.salary = (select max(e2.salary) from employees e2 where e2.dept_id = e.dept_id);
+
+select p.product_name, sales.total_qty from products p
+join (select product_id, sum(quantity) as total_qty from order_items group by product_id) sales on p.product_id = sales.product_id;
+
+
+
+
+
+
+
+
+
+----------------------------------------------------------TASK-15-------------------------------------------------------------------
+
+select c.id, c.name, c.city, o.order_id, o.order_date, o.amount, o.order_status from customers c
+inner join orders o on c.id = o.customer_id;
+
+select c.name as customer_name, c.city as customer_city, o.order_id as order_number, o.amount as order_value from customers c
+join orders o on c.id = o.customer_id;
+
+select c.name, o.order_id, o.amount, (o.amount * 0.10) as tax_amount, (o.amount + (o.amount * 0.10)) as final_amount from customers c
+join orders o on c.id = o.customer_id;
+
+
+select c.name, o.order_id, o.amount, 
+case 
+when o.amount >= 5000 then 'high value' 
+when o.amount >= 2000 then 'medium value' 
+else 'low value' 
+end as order_category
+from customers c
+join orders o on c.id = o.customer_id;
+
+
 
 
 
@@ -558,9 +633,6 @@ select * from courses;
 select * from students_courses;
 select * from departments;
 select * from employees;
-
-
-
 
 
 
