@@ -369,7 +369,7 @@ REFERENCES employees(emp_id);
 
 
 
-SELECT e.emp_id, e.emp_name AS employee_name, m.emp_name AS manager_name
+SELECT e.emp_id,m.manager_id, e.emp_name AS employee_name, m.emp_name AS manager_name
 FROM employees e LEFT JOIN employees m ON e.manager_id = m.emp_id;
 
 
@@ -551,7 +551,7 @@ select * from products
 where product_id not in (select product_id from order_items);
 
 select * from employees
-where dept_id not in (select dept_id from departments);
+where dept_id not in (select dept_id from departments); 
 
 select * from orders
 where amount > (select avg(amount) from orders);
@@ -574,9 +574,9 @@ join orders o on c.id = o.customer_id and o.amount > (select avg(amount) from or
 select c.name, avg_orders.avg_amount from customers c join 
 (select customer_id, avg(amount) as avg_amount from orders group by customer_id) avg_orders on c.id = avg_orders.customer_id;
 
-select * from customers c
+select * from customers c 
 where exists (select 1 from orders o where o.customer_id = c.id);
-
+ 
 select * from customers c
 where not exists (select 1 from orders o where o.customer_id = c.id);
 
@@ -597,7 +597,7 @@ join (select product_id, sum(quantity) as total_qty from order_items group by pr
 ----------------------------------------------------------TASK-15-------------------------------------------------------------------
 
 select c.id, c.name, c.city, o.order_id, o.order_date, o.amount, o.order_status from customers c
-inner join orders o on c.id = o.customer_id;
+inner join orders o on c.id = o.customer_id;  
 
 select c.name as customer_name, c.city as customer_city, o.order_id as order_number, o.amount as order_value from customers c
 join orders o on c.id = o.customer_id;
@@ -626,13 +626,63 @@ join orders o on c.id = o.customer_id;
 use as2_j;
 select * from customers;
 select * from orders;
-select * from order_items;
-select * from products;
-select * from students;
-select * from courses;
-select * from students_courses;
+select * from order_items; 
 select * from departments;
-select * from employees;
+
+select oi.* from customers c join orders o on c.id=o.customer_id join order_items oi on o.order_id=oi.order_id where c.is_active=1;
+
+select c.*, oi.* from customers c left join orders o on c.id=o.customer_id left join order_items oi on o.order_id=oi.order_id 
+where (c.city like '%Hyderabad%' or c.city like'%Bangalore%' or c.city like'%Mumbai%') or (c.city ='Hyderabad' ) ;
+
+
+select c.*,o.*, oi.* from customers c left join orders o on c.id=o.customer_id left join 
+order_items oi on o.order_id=oi.order_id where (c.city like '%Hyderabad%' or c.city like'%Bangalore%' or c.city like'%Mumbai%') 
+and (o.amount>2000 and o.order_date<'2026-02-05' and o.order_status='pending') ;
+
+
+select c.id,c.name,count(o.order_id) as cust_ordrs,
+case 
+when count(o.order_id)>3 then 'high count'
+when count(o.order_id)>2 then 'medium count'
+else 'low count' 
+end 
+as orders_count
+from customers c join orders o on c.id=o.customer_id 
+join order_items oi on o.order_id=oi.order_id group by c.id,c.name having count(o.order_id)>1;
+
+
+
+select c.id,c.name,count(o.order_id) as cust_ordrs from customers c join orders o on c.id=o.customer_id 
+join order_items oi on o.order_id=oi.order_id group by c.id,c.name having count(o.order_id)>1;
+
+select c.id,c.name,o.order_id,o.order_status,o.amount,
+case 
+when o.amount>30000 then 'high amount'
+when o.amount>2000 then 'medium amount'
+else 'low amount'
+end as amount_description from
+customers c join orders o on c.id =o.customer_id;
+
+select * from customers c where exists (select* from orders o where c.id=o.customer_id)
+
+select * from customers c where not exists (select* from orders o where c.id=o.customer_id)
+
+select p.product_name, sales.total_qty from products p
+join (select product_id, sum(quantity) as total_qty from order_items group by product_id) sales on p.product_id = sales.product_id;
+
+
+select c.* from customers c join orders o on c.id=o.customer_id where o.amount>(select min(amount) from orders);
+
+
+select c.* from customers c join orders o on c.id=o.customer_id where c.id in (select o.customer_id from orders where o.amount>30000);
+
+select c.* from customers c join orders o on c.id=o.customer_id where c.id not in (select o.customer_id from orders where o.amount>30000);
+
+select  distinct c.id,c.name,c.email from customers c join orders o on c.id=o.customer_id;
+
+
+
+
 
 
 
