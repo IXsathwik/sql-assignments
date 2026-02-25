@@ -88,12 +88,12 @@ INSERT INTO menu_items
 (restaurant_id, category_id, name, description, image_url, food_type, price, special_price, preparation_time, is_available, is_out_of_stock, is_deleted)
 VALUES
 
--- Restaurant 1 Items
+
 (1, 1, 'Paneer Tikka', 'Grilled paneer cubes with spices', 'paneer.jpg', 'VEG', 250.00, 220.00, 20, 1, 0, 0),
 
 (1, 2, 'Chicken Biryani', 'Hyderabadi style biryani', 'biryani.jpg', 'NON_VEG', 350.00, NULL, 30, 1, 0, 0),
 
--- Restaurant 2 Items
+
 (2, 3, 'Chocolate Brownie', 'Rich chocolate brownie with nuts', 'brownie.jpg', 'VEG', 180.00, 150.00, 15, 0, 1, 0),
 
 (2, 4, 'Cold Coffee', 'Chilled coffee with ice cream', 'coffee.jpg', 'VEG', 120.00, NULL, 10, 1, 0, 0);
